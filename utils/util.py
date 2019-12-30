@@ -1,4 +1,5 @@
 import json
+import mlflow
 import pandas as pd
 from pathlib import Path
 from itertools import repeat
@@ -38,6 +39,7 @@ class MetricTracker:
     def update(self, key, value, n=1):
         if self.writer is not None:
             self.writer.add_scalar(key, value)
+        mlflow.log_metric(key, value)
         self._data.total[key] += value * n
         self._data.counts[key] += n
         self._data.average[key] = self._data.total[key] / self._data.counts[key]

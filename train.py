@@ -1,6 +1,7 @@
 import argparse
 import collections
 import torch
+import mlflow
 import numpy as np
 import data_loader.data_loaders as module_data
 import model.loss as module_loss
@@ -26,7 +27,6 @@ def main(config):
 
     # build model architecture, then print to console
     model = config.init_obj('arch', module_arch)
-    logger.info(model)
 
     # get function handles of loss and metrics
     criterion = getattr(module_loss, config['loss'])
@@ -44,7 +44,11 @@ def main(config):
                       valid_data_loader=valid_data_loader,
                       lr_scheduler=lr_scheduler)
 
-    trainer.train()
+    if config['use_mlflow']:
+        with mlflow.start_run():
+            trainer.train()
+    else:
+        trainer.train()
 
 
 if __name__ == '__main__':

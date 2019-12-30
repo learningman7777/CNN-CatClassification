@@ -23,7 +23,7 @@ def main(config):
 
     # build model architecture
     model = config.init_obj('arch', module_arch)
-    logger.info(model)
+    # logger.info(model)
 
     # get function handles of loss and metrics
     loss_fn = getattr(module_loss, config['loss'])
