@@ -112,3 +112,5 @@ datasets/
 __MACOSX/
 /.idea
 /images
+/data_backup
+/mlruns

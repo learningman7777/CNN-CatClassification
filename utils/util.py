@@ -49,3 +49,31 @@ class MetricTracker:
     
     def result(self):
         return dict(self._data.average)
+
+def get_recursively(search_dict):
+    """
+    Takes a dict with nested lists and dicts,
+    and searches all dicts for a key of the field
+    provided.
+    """
+    fields_found = {}
+
+    for key, value in search_dict.items():
+        if isinstance(value, OrderedDict):
+            results = get_recursively(value)
+            for dict_key, dict_result in results.items():
+                fields_found[dict_key] = dict_result
+
+        elif isinstance(value, list):
+            for item in value:
+                if isinstance(item, dict):
+                    more_results = get_recursively(item)
+                    local_list = []
+                    for another_result in more_results:
+                        local_list.append(another_result)
+
+                    fields_found[key] = local_list
+        else:
+            fields_found[key] = value
+
+    return fields_found

@@ -9,7 +9,7 @@ import model.metric as module_metric
 import model.model as module_arch
 from parse_config import ConfigParser
 from trainer import Trainer
-
+from utils import get_recursively
 
 # fix random seeds for reproducibility
 SEED = 123
@@ -19,8 +19,7 @@ torch.backends.cudnn.benchmark = False
 np.random.seed(SEED)
 
 def main(config):
-    logger = config.get_logger('train')
-
+    # logger = config.get_logger('train')
     # setup data_loader instances
     data_loader = config.init_obj('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
@@ -46,6 +45,9 @@ def main(config):
 
     if config['use_mlflow']:
         with mlflow.start_run():
+            param_dict = get_recursively(config.config)
+            for each_param_key, each_param_value in param_dict.items():
+                mlflow.log_param(each_param_key, each_param_value)
             trainer.train()
     else:
         trainer.train()
