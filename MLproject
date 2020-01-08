@@ -1,4 +1,4 @@
-name: CatClassificationMLFlow
+name: catclassification
 
 conda_env: conda.yaml
 

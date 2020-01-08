@@ -1,4 +1,4 @@
-name: CatClassificationMLFlow
+name: catclassification
 channels:
   - defaults
 dependencies:

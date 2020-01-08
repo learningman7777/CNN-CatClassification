@@ -1,5 +1,5 @@
 {
-    "name": "CatClassification",
+    "name": "catclassification",
     "n_gpu": 1,
 
     "arch": {
