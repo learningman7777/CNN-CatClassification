@@ -16,8 +16,6 @@ import mlflow
 import mlflow.pytorch
 from mlflow.utils import PYTHON_VERSION
 from mlflow.utils.file_utils import TempDir
-from mlflow.utils.environment import _mlflow_conda_env
-
 
 def decode_and_resize_image(raw_bytes, size):
     """

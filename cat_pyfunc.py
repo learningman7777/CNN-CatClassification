@@ -3,7 +3,6 @@
 그 custom python function들을 제공하기 위한 파일입니다.
 """
 import base64
-from io import BytesIO
 import numpy as np
 import pandas as pd
 import os
@@ -11,15 +10,12 @@ import PIL
 import yaml
 
 import torch
-import torch.nn as nn
-import torchvision.models as vmodels
 from torchvision import transforms
 
 import mlflow
 import mlflow.pytorch
 from mlflow.utils import PYTHON_VERSION
 from mlflow.utils.file_utils import TempDir
-from mlflow.utils.environment import _mlflow_conda_env
 
 class CatPyfunc(object):
     """

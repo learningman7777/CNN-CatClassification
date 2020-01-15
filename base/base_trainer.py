@@ -2,9 +2,6 @@ import torch
 from abc import abstractmethod
 from numpy import inf
 from logger import TensorboardWriter
-import mlflow
-import mlflow.pytorch
-import torchvision
 from cat_pyfunc import log_model
 
 

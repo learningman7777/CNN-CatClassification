@@ -1,7 +1,6 @@
 from torchvision import datasets, transforms
 from base import BaseDataLoader
 from torch.utils.data import DataLoader
-import torch
 from torch.utils.data.dataloader import default_collate
 import torchvision.datasets as vdatasets
 import os
