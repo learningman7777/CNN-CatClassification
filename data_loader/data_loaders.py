@@ -48,6 +48,9 @@ class CatClassificationDataLoader(DataLoader):
         image_datasets = {x: vdatasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
                           for x in ['TRAIN', 'VAL']}
 
+        self.label_list = image_datasets['TRAIN'].classes
+        self.int_to_label_dict = {v: k for k, v in image_datasets['TRAIN'].class_to_idx.items()}
+
         self.n_samples = len(image_datasets['TRAIN'])
 
         self.train_sampler = image_datasets['TRAIN']

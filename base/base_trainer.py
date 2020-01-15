@@ -2,15 +2,18 @@ import torch
 from abc import abstractmethod
 from numpy import inf
 from logger import TensorboardWriter
+import mlflow
 import mlflow.pytorch
 import torchvision
+from cat_pyfunc import log_model
 
 
 class BaseTrainer:
     """
     Base class for all trainers
     """
-    def __init__(self, model, criterion, metric_ftns, optimizer, config):
+
+    def __init__(self, model, criterion, metric_ftns, optimizer, config, domain=(0, 1)):
         self.config = config
         self.logger = config.get_logger('trainer', config['trainer']['verbosity'])
 
@@ -20,6 +23,7 @@ class BaseTrainer:
         if len(device_ids) > 1:
             self.model = torch.nn.DataParallel(model, device_ids=device_ids)
 
+        self.domain = domain
         self.criterion = criterion
         self.metric_ftns = metric_ftns
         self.optimizer = optimizer
@@ -44,8 +48,9 @@ class BaseTrainer:
 
         self.checkpoint_dir = config.save_dir
 
-        # setup visualization writer instance                
-        self.writer = TensorboardWriter(config.log_dir, self.logger, cfg_trainer['tensorboard'])
+        # setup visualization writer instance
+        self.writer = TensorboardWriter(
+            config.log_dir, self.logger, cfg_trainer['tensorboard'])
 
         if config.resume is not None:
             self._resume_checkpoint(config.resume)
@@ -81,7 +86,8 @@ class BaseTrainer:
                 try:
                     # check whether model performance improved or not, according to specified metric(mnt_metric)
                     improved = (self.mnt_mode == 'min' and log[self.mnt_metric] <= self.mnt_best) or \
-                               (self.mnt_mode == 'max' and log[self.mnt_metric] >= self.mnt_best)
+                               (self.mnt_mode ==
+                                'max' and log[self.mnt_metric] >= self.mnt_best)
                 except KeyError:
                     self.logger.warning("Warning: Metric '{}' is not found. "
                                         "Model performance monitoring is disabled.".format(self.mnt_metric))
@@ -128,22 +134,12 @@ class BaseTrainer:
         :param log: logging information of the epoch
         :param save_best: if True, rename the saved checkpoint to 'model_best.pth'
         """
-        arch = type(self.model).__name__
-        state = {
-            'arch': arch,
-            'epoch': epoch,
-            'state_dict': self.model.state_dict(),
-            'optimizer': self.optimizer.state_dict(),
-            'monitor_best': self.mnt_best,
-            'config': self.config
-        }
-        filename = str(self.checkpoint_dir / 'checkpoint-epoch{}.pth'.format(epoch))
-        torch.save(state, filename)
-        mlflow.pytorch.log_model(self.model, "model")
-        self.logger.info("Saving checkpoint: {} ...".format(filename))
+        
+        print(self.domain)
+        log_model(self.model, "model_epoch_{}".format(epoch), self.domain)
+
         if save_best:
-            best_path = str(self.checkpoint_dir / 'model_best.pth')
-            torch.save(state, best_path)
+            log_model(self.model, "model_best", self.domain)
             self.logger.info("Saving current best: model_best.pth ...")
 
     def _resume_checkpoint(self, resume_path):
@@ -171,4 +167,5 @@ class BaseTrainer:
         else:
             self.optimizer.load_state_dict(checkpoint['optimizer'])
 
-        self.logger.info("Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch))
+        self.logger.info(
+            "Checkpoint loaded. Resume training from epoch {}".format(self.start_epoch))
