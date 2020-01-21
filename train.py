@@ -23,9 +23,10 @@ def main(config):
     # setup data_loader instances
     data_loader = config.init_obj('data_loader', module_data)
     valid_data_loader = data_loader.split_validation()
+    nb_classes = len(data_loader.label_list)
 
     # build model architecture, then print to console
-    model = config.init_obj('arch', module_arch)
+    model = config.init_obj('arch', module_arch, nb_classes=nb_classes)
     # logger.info(model)
 
     # get function handles of loss and metrics

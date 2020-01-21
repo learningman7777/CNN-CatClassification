@@ -23,7 +23,7 @@ class MnistModel(BaseModel):
         return F.log_softmax(x, dim=1)
 
 class Resnet_fc(nn.Module):
-    def __init__(self, nb_classes=37, toFreeze=False):
+    def __init__(self, nb_classes=0, toFreeze=False):
         super(Resnet_fc, self).__init__()
 
         base_model = vmodels.resnet50(pretrained=True)
